@@ -1,0 +1,148 @@
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<figure class="highcharts-figure">
+    <div id="pie-container"></div>
+</figure>
+<figure class="highcharts-figure">
+    <div id="column-container"></div>
+</figure>
+<figure class="highcharts-figure">
+    <div id="line-container"></div>
+</figure>
+<script type="text/javascript">
+    $.getJSON('../output/genre-counts-all-data.json', function (data) {
+
+        // Create the pie chart
+        Highcharts.chart('pie-container', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Genre Movie Count All time'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <br>{point.percentage:.1f} %<br>value: {point.y}'
+            },
+            accessibility: {
+                point: {
+                    valueSuffix: '%'
+                }
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>value: {point.y}'
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                name: 'Genres',
+                colorByPoint: true,
+                data: data
+            }]
+        });
+
+        $.getJSON('../output/genre-counts-last-5-years-data.json', function (data) {
+            // Create the column chart
+            Highcharts.chart('column-container', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Genre Movie Count for the last 5 years'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Movies'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    pointFormat: 'Movie count: <b>{point.y}</b>'
+                },
+                series: [{
+                    name: 'Genres',
+                    data: data,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y}'
+                    }
+                }]
+            });
+        });
+    });
+
+
+    $.getJSON('../output/movie-years-data.json', function (movieYearsData) {
+        $.getJSON('../output/genre-year-movie-count-data.json', function (genreYearMovieCountData) {
+            Highcharts.chart('line-container', {
+                title: {
+                    text: 'Genre Movies per Year'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of Movies'
+                    }
+                },
+                xAxis: {
+                    categories: movieYearsData
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        }
+                    }
+                },
+                series: genreYearMovieCountData,
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+
